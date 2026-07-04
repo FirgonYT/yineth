@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>¡FELIZ CUMPLE RICI! 🌸✨</title>
+    <!-- Cargamos tipografías ultra coquette y legibles desde Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@500;700&family=Comfortaa:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- RESET Y OPTIMIZACIÓN MÓVIL --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Quicksand', sans-serif;
+            background-color: #ffdeeb;
+            /* Fondo rosa con lunares ridículamente adorables */
+            background-image: radial-gradient(#ffb6c1 20%, transparent 20%),
+                              radial-gradient(#ffb6c1 20%, transparent 20%);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+        }
+
+        /* --- CONTENEDOR PRINCIPAL --- */
+        .canvas {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        /* --- ESTADO INICIAL: BOTÓN GIGANTE --- */
+        .btn-trigger {
+            padding: 20px 50px;
+            font-size: 2.2rem;
+            font-family: 'Comfortaa', sans-serif;
+            color: #fff;
+            background: linear-gradient(45deg, #ff69b4, #ff1493, #ff69b4);
+            background-size: 200% auto;
+            border: 6px solid #fff;
+            border-radius: 50px;
+            box-shadow: 0 10px 0 #c71585, 0 20px 25px rgba(0,0,0,0.3);
+            cursor: pointer;
+            animation: pulseBtn 1.2s infinite ease-in-out, flowGradient 3s infinite linear;
+            transition: transform 0.1s, opacity 0.3s ease;
+            touch-action: manipulation;
+            z-index: 100;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+        }
+
+        .btn-trigger:active {
+            transform: scale(0.92) translateY(5px);
+            box-shadow: 0 5px 0 #c71585, 0 10px 15px rgba(0,0,0,0.3);
+        }
+
+        /* --- ESTADO ACTIVO: CAOS (OCULTO AL INICIO) --- */
+        .caos-container {
+            display: none;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        /* --- WORDART SHITPOST --- */
+        .titulo-meme {
+            position: absolute;
+            top: 10%;
+            width: 100%;
+            text-align: center;
+            font-size: 3rem;
+            font-family: 'Impact', sans-serif;
+            line-height: 1.1;
+            color: #ccff00;
+            text-transform: uppercase;
+            -webkit-text-stroke: 2px #ff007f;
+            filter: drop-shadow(4px 4px 0px #000000);
+            animation: shakeText 0.15s infinite alternate, colorShift 2s infinite linear;
+            padding: 0 10px;
+            z-index: 50;
+        }
+
+        /* --- FOTOS VOLADORAS --- */
+        .foto-voladora {
+            position: absolute;
+            width: 130px;
+            height: 130px;
+            object-fit: cover;
+            border: 6px solid #fff;
+            outline: 4px solid #ff69b4;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            z-index: 30;
+            border-radius: 10px;
+        }
+
+        /* Trayectorias caóticas */
+        #foto1 { top: 15%; left: 8%; animation: flyAround1 6s infinite linear, spin 2s infinite linear; }
+        #foto2 { top: 45%; left: 45%; animation: flyAround2 8s infinite linear, spin 3.5s infinite linear reverse; }
+        #foto3 { top: 65%; left: 15%; animation: flyAround3 7s infinite linear, spin 2.5s infinite linear; }
+
+        /* --- LLUVIA DE EMOJIS (CONFETI) --- */
+        .emoji-drop {
+            position: absolute;
+            top: -50px;
+            font-size: 2.5rem;
+            z-index: 20;
+            user-select: none;
+            animation: fall linear infinite;
+        }
+
+        /* --- BOTÓN LÉEME (COQUETTE STYLE) --- */
+        .btn-leeme {
+            position: absolute;
+            bottom: 8%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 40px;
+            font-size: 1.6rem;
+            font-family: 'Comfortaa', sans-serif;
+            color: #fff;
+            background: #ff1493;
+            border: 4px solid #fff;
+            border-radius: 30px;
+            box-shadow: 0 6px 0 #c71585, 0 12px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 90;
+            pointer-events: auto; /* Permite clickear en el caos */
+            animation: pulseBtn 1.5s infinite ease-in-out;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+        }
+
+        .btn-leeme:active {
+            transform: translateX(-50%) scale(0.95);
+            box-shadow: 0 3px 0 #c71585, 0 6px 8px rgba(0,0,0,0.2);
+        }
+
+        /* --- CAPA DE LA CARTA (MODAL) --- */
+        .carta-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 222, 235, 0.96); /* Filtro rosa difuminado */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        /* El sobre/papel físico */
+        .carta-papel {
+            width: 100%;
+            max-width: 360px;
+            max-height: 85vh;
+            background: #fffcf5; /* Color papel pergamino claro */
+            border: 4px solid #ff69b4;
+            border-radius: 20px;
+            padding: 25px 20px;
+            box-shadow: 0 15px 35px rgba(255, 105, 180, 0.3);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Doble borde interno clásico de carta de amor */
+        .carta-papel::before {
+            content: '';
+            position: absolute;
+            top: 6px; left: 6px; right: 6px; bottom: 6px;
+            border: 2px dashed #ffb6c1;
+            border-radius: 14px;
+            pointer-events: none;
+        }
+
+        /* Encabezado de la carta */
+        .carta-header {
+            text-align: center;
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.2rem;
+            color: #ff1493;
+            margin-bottom: 15px;
+            z-index: 10;
+        }
+
+        /* Contenedor de scroll para el texto largo (Evita desbordes en móviles) */
+        .carta-body {
+            overflow-y: auto;
+            flex-grow: 1;
+            margin-bottom: 15px;
+            padding-right: 5px;
+            z-index: 10;
+        }
+
+        /* Personalización de la barra de scroll coquette */
+        .carta-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .carta-body::-webkit-scrollbar-track {
+            background: #fff0f5;
+            border-radius: 10px;
+        }
+        .carta-body::-webkit-scrollbar-thumb {
+            background: #ffb6c1;
+            border-radius: 10px;
+        }
+
+        .carta-texto {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #4a3b32; /* Tono marrón suave vintage */
+            text-align: justify;
+            font-weight: 500;
+        }
+
+        /* Página 2: Piolín */
+        #carta-pagina-2 {
+            display: none;
+            text-align: center;
+        }
+
+        .piolin-img {
+            width: 100%;
+            max-height: 280px;
+            object-fit: contain;
+            border-radius: 15px;
+            margin-top: 15px;
+            border: 4px dashed #ffb6c1;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        /* Botones de navegación de la carta */
+        .btn-carta-nav {
+            width: 100%;
+            padding: 12px;
+            font-family: 'Comfortaa', sans-serif;
+            font-size: 1.1rem;
+            color: #fff;
+            background: #ff69b4;
+            border: 3px solid #fff;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #db7093;
+            transition: transform 0.1s;
+            z-index: 10;
+            text-transform: uppercase;
+        }
+
+        .btn-carta-nav:active {
+            transform: scale(0.97);
+            box-shadow: 0 2px 0 #db7093;
+        }
+
+        /* --- ANIMACIONES NATIVAS --- */
+        @keyframes pulseBtn {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes flowGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes shakeText {
+            0% { transform: translate(2px, 1px) rotate(0deg) scale(1); }
+            100% { transform: translate(-1px, -2px) rotate(-1deg) scale(1.03); }
+        }
+
+        @keyframes colorShift {
+            0% { color: #ccff00; }
+            33% { color: #00ffff; }
+            66% { color: #ff00ff; }
+            100% { color: #ccff00; }
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Rebotes en pantalla móvil */
+        @keyframes flyAround1 {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(55vw, 15vh); }
+            50% { transform: translate(15vw, 50vh); }
+            75% { transform: translate(45vw, 30vh); }
+            100% { transform: translate(0, 0); }
+        }
+
+        @keyframes flyAround2 {
+            0% { transform: translate(0, 0); }
+            30% { transform: translate(-35vw, 25vh); }
+            60% { transform: translate(25vw, -15vh); }
+            80% { transform: translate(-15vw, 40vh); }
+            100% { transform: translate(0, 0); }
+        }
+
+        @keyframes flyAround3 {
+            0% { transform: translate(0, 0); }
+            33% { transform: translate(35vw, -35vh); }
+            66% { transform: translate(-25vw, -5vh); }
+            100% { transform: translate(0, 0); }
+        }
+
+        @keyframes fall {
+            0% {
+                top: -50px;
+                transform: translateX(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                top: 105vh;
+                transform: translateX(100px) rotate(720deg);
+                opacity: 0.7;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="canvas">
+        <!-- BOTÓN DETONADOR -->
+        <button class="btn-trigger" id="btnTocame">Tócame</button>
+
+        <!-- CONTENEDOR DEL DESMADRE -->
+        <div class="caos-container" id="caos">
+            <h1 class="titulo-meme" id="titulo-meme">¡FELIZ CUMPLE<br>RICITOS!</h1>
+            
+            <!-- FOTOS CON MARCADORES DE POSICIÓN -->
+            <img src="foto1.jpg" alt="Rici 1" class="foto-voladora" id="foto1" onerror="this.style.background='#ff69b4'">
+            <img src="foto2.jpg" alt="Rici 2" class="foto-voladora" id="foto2" onerror="this.style.background='#ff1493'">
+            <img src="foto3.jpg" alt="Rici 3" class="foto-voladora" id="foto3" onerror="this.style.background='#ffb6c1'">
+
+            <!-- NUEVO BOTÓN LÉEME -->
+            <button class="btn-leeme" id="btnLeeme">🎀 Léeme 🎀</button>
+        </div>
+
+        <!-- CAPA DE LA CARTA (MODAL) -->
+        <div class="carta-overlay" id="carta-overlay">
+            <div class="carta-papel">
+                
+                <!-- PÁGINA 1: TEXTO EMOTIVO -->
+                <div id="carta-pagina-1" style="display: flex; flex-direction: column; height: 100%;">
+                    <div class="carta-header">Querida Ricitos... 💌</div>
+                    <div class="carta-body">
+                        <p class="carta-texto">
+                            Ya eres legal y eso se nota, no solo en lo fisico o en los años, si no en la madurez que tienes y la gran persona que demostraste ser. Otro año más que superaste retos y caminos dificiles, y otro año más en el que tambien disfrutaste los momentos buenos. Yo podría estar diciendote solo feliz cumpleaños o enviandote una imagen de un piolin que diga feliz cumpleaños; pero estoy acá reafirmando una vez más, que sin duda elegí a la mejor mujer del mundo (L.M.M.D.M) como amiga y compañera en mi vida. Estoy feliz de que des el salto tan gigante hoy de pasar de ser una adolescente a ser una adulta y demostrar que superaste todas las pruebas para llegar hasta aquí. Te quiero mucho mis Ricitos🖤
+                        </p>
+                    </div>
+                    <button class="btn-carta-nav" id="btnSiguiente">Siguiente ➔</button>
+                </div>
+
+                <!-- PÁGINA 2: EL PIOLÍN SHITPOST -->
+                <div id="carta-pagina-2">
+                    <div class="carta-header" style="font-size: 1.6rem; line-height: 1.2;">
+                        Por cierto, acá está el piolín por si acaso... 🧸
+                    </div>
+                    <div class="carta-body" style="overflow: hidden;">
+                        <!-- Imagen de Piolín -->
+                        <img src="piolin.jpg" alt="Piolín de cumpleaños" class="piolin-img" onerror="this.src='https://placehold.co/300x300/ffb6c1/880033?text=Piolin+no+encontrado';">
+                    </div>
+                    <button class="btn-carta-nav" onclick="location.reload()">Empezar de nuevo 🎀</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- AUDIO ELEMENT -->
+    <audio id="musica" src="musica_cumpleanos.mp3" loop></audio>
+
+    <script>
+        const btnTocame = document.getElementById('btnTocame');
+        const btnLeeme = document.getElementById('btnLeeme');
+        const btnSiguiente = document.getElementById('btnSiguiente');
+        
+        const caos = document.getElementById('caos');
+        const musica = document.getElementById('musica');
+        const cartaOverlay = document.getElementById('carta-overlay');
+        
+        const pag1 = document.getElementById('carta-pagina-1');
+        const pag2 = document.getElementById('carta-pagina-2');
+
+        const emojisCoquette = ['🌸', '🌹', '🎀', '✨', '👑', '💖', '💅', '🍬', '🧸', '🍓'];
+        let emojiInterval = null;
+
+        // Generar lluvia infinita de emojis
+        function crearEmoji() {
+            // Detener generación si la carta está abierta
+            if (cartaOverlay.style.display === 'flex') return;
+
+            const emoji = document.createElement('div');
+            emoji.classList.add('emoji-drop');
+            
+            emoji.innerText = emojisCoquette[Math.floor(Math.random() * emojisCoquette.length)];
+            emoji.style.left = Math.random() * 100 + 'vw';
+            
+            const duracion = Math.random() * 2 + 2.5; 
+            const tamaño = Math.random() * 1.3 + 1.2; 
+            
+            emoji.style.animationDuration = `${duracion}s`;
+            emoji.style.fontSize = `${tamaño}rem`;
+
+            caos.appendChild(emoji);
+
+            setTimeout(() => {
+                emoji.remove();
+            }, duracion * 1000);
+        }
+
+        // TRIGGER 1: Click en "Tócame" (Inicia el Caos)
+        btnTocame.addEventListener('click', () => {
+            btnTocame.style.opacity = '0';
+            setTimeout(() => btnTocame.style.display = 'none', 300);
+
+            caos.style.display = 'block';
+
+            musica.play().catch(error => {
+                console.log("Autoplay bloqueado, se activará al toque físico.", error);
+            });
+
+            // Lluvia de emojis cada 160ms
+            emojiInterval = setInterval(crearEmoji, 160);
+        });
+
+        // TRIGGER 2: Click en "Léeme" (Pausa música y abre la carta)
+        btnLeeme.addEventListener('click', () => {
+            // 1. Apagar música
+            musica.pause();
+
+            // 2. Parar de meter más emojis al DOM
+            clearInterval(emojiInterval);
+
+            // 3. Animación de desvanecimiento suave para ocultar el caos
+            document.getElementById('titulo-meme').style.transition = 'opacity 0.4s';
+            document.getElementById('titulo-meme').style.opacity = '0';
+            document.getElementById('foto1').style.transition = 'opacity 0.4s';
+            document.getElementById('foto1').style.opacity = '0';
+            document.getElementById('foto2').style.transition = 'opacity 0.4s';
+            document.getElementById('foto2').style.opacity = '0';
+            document.getElementById('foto3').style.transition = 'opacity 0.4s';
+            document.getElementById('foto3').style.opacity = '0';
+            btnLeeme.style.transition = 'opacity 0.4s';
+            btnLeeme.style.opacity = '0';
+
+            // 4. Mostrar la carta coquette con efecto de aparición suave
+            setTimeout(() => {
+                caos.style.display = 'none';
+                cartaOverlay.style.display = 'flex';
+                setTimeout(() => {
+                    cartaOverlay.style.opacity = '1';
+                }, 50);
+            }, 400);
+        });
+
+        // TRIGGER 3: Click en "Siguiente" (Transición a la página de Piolín)
+        btnSiguiente.addEventListener('click', () => {
+            pag1.style.transition = 'opacity 0.3s, transform 0.3s';
+            pag1.style.opacity = '0';
+            pag1.style.transform = 'translateY(-10px)';
+
+            setTimeout(() => {
+                pag1.style.display = 'none';
+                
+                pag2.style.display = 'block';
+                pag2.style.opacity = '0';
+                pag2.style.transform = 'translateY(10px)';
+                
+                setTimeout(() => {
+                    pag2.style.transition = 'opacity 0.4s, transform 0.4s';
+                    pag2.style.opacity = '1';
+                    pag2.style.transform = 'translateY(0)';
+                }, 50);
+            }, 300);
+        });
+
+        // Fallback de audio táctil para iOS/Safari
+        document.body.addEventListener('touchstart', () => {
+            if (caos.style.display === 'block' && musica.paused && cartaOverlay.style.display !== 'flex') {
+                musica.play();
+            }
+        }, { passive: true });
+    </script>
+</body>
+</html>
